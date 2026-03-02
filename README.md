@@ -112,10 +112,6 @@
 
 ![報告範例 — 單股分析](docs/images/report_sample.png)
 
-**大規模篩選研究（中國A股三年低點）：**
-
-![報告範例 — 篩選研究](docs/images/report_sample_cn_3yr_low.png)
-
 ### 斜線指令（快速查詢）
 
 ```
