@@ -30,7 +30,19 @@ class TWFetcher(MarketDataFetcher):
         return raw_ticker.replace(".TW", "").replace(".TWO", "").strip()
 
     def _yf_ticker(self, ticker: str) -> str:
-        """Get yfinance-compatible ticker."""
+        """Get yfinance-compatible ticker. TPEx stocks use .TWO, TWSE use .TW."""
+        import sqlite3, os
+        db_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "ccstockworkenv.db")
+        try:
+            conn = sqlite3.connect(os.path.abspath(db_path))
+            row = conn.execute(
+                "SELECT exchange FROM stocks WHERE ticker=? AND market='TW'", (ticker,)
+            ).fetchone()
+            conn.close()
+            if row and row[0] in ("tpex", "emerging"):
+                return f"{ticker}.TWO"
+        except Exception:
+            pass
         return f"{ticker}.TW"
 
     def get_quote(self, ticker: str) -> StockQuote:
