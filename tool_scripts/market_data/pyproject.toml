@@ -7,4 +7,5 @@ dependencies = [
     "yfinance>=0.2.36",
     "requests>=2.31.0",
     "akshare>=1.14.0",
+    "twstock>=1.4.0",
 ]

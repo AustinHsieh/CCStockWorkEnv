@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:/opt/homebrew/bin:$PATH\" && uv run python fetcher_factory.py quote 2010 --market TW 2>&1)",
+      "Bash(export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:/opt/homebrew/bin:$PATH\" && cd /Users/austin.hsieh/temp/CCStockWorkEnv/tool_scripts/db_ops && uv run python research_cache_ops.py --is-fresh 2010 TW financials 2>&1)",
+      "Bash(export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:/opt/homebrew/bin:$PATH\" && cd /Users/austin.hsieh/temp/CCStockWorkEnv/tool_scripts/market_data && uv run python fetcher_factory.py financials 2010 --market TW --period annual 2>&1)",
+      "Bash(sqlite3 /Users/austin.hsieh/temp/CCStockWorkEnv/data/ccstockworkenv.db \"SELECT COUNT\\(DISTINCT ticker\\) FROM health_scores WHERE market='TW';\")",
+      "Bash(cd tool_scripts/market_data && uv run python fetcher_factory.py quote 0050 --market TW 2>&1)",
+      "Bash(cd /Users/austin.hsieh/temp/CCStockWorkEnv/tool_scripts/market_data && uv run python fetcher_factory.py quote 0050 --market TW 2>&1)",
+      "Bash(sqlite3 /Users/austin.hsieh/temp/CCStockWorkEnv/data/ccstockworkenv.db \"\nCREATE TABLE IF NOT EXISTS monthly_revenue \\(\n    ticker      TEXT NOT NULL,\n    market      TEXT NOT NULL DEFAULT 'TW',\n    year        INTEGER NOT NULL,\n    month       INTEGER NOT NULL,\n    revenue     INTEGER,\n    yoy_pct     REAL,\n    mom_pct     REAL,\n    cum_revenue INTEGER,\n    cum_yoy_pct REAL,\n    created_at  TEXT NOT NULL DEFAULT \\(datetime\\('now'\\)\\),\n    PRIMARY KEY \\(ticker, market, year, month\\)\n\\);\nCREATE INDEX IF NOT EXISTS idx_monthly_rev_ticker ON monthly_revenue\\(ticker, market, year DESC, month DESC\\);\nSELECT 'table created';\n\")",
+      "Bash(curl -s \"http://localhost:8800/charts/5274/?market=TW&period=1y&embed=1\" | grep -o \"2026-[0-9-]*\" | tail -3)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8800 2>/dev/null)",
+      "Bash(uv run python fetcher_factory.py quote 0050 --market TW 2>/dev/null)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8800/reports/20260305_221029_tw_options_strategy/)",
+      "Bash(cd /Users/austin.hsieh/temp/CCStockWorkEnv/tool_scripts/market_data && uv run python fetcher_factory.py quote ^TWII --market TW 2>&1)"
+    ]
+  }
+}

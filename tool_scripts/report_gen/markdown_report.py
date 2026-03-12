@@ -67,6 +67,10 @@ def generate_single_report(ticker: str, market: str, output_dir: str) -> str:
     if len(financials) >= 2:
         fscore_result = calculate_fscore(financials[0], financials[1])
 
+    # Mapping for display labels
+    zscore_map = {'safe': '安全區', 'grey': '灰色地帶', 'distress': '危險區'}
+    fscore_map = {'strong': '財務強健', 'average': '普通', 'weak': '疲弱'}
+
     # Build report
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     report = f"""# {info.name} ({ticker}) — 個股研究報告
@@ -121,10 +125,10 @@ def generate_single_report(ticker: str, market: str, output_dir: str) -> str:
 ## 健康評估
 
 ### Altman Z-Score：{_format_number(zscore_result.get('zscore'))}
-- **判定**：{{'safe': '安全區', 'grey': '灰色地帶', 'distress': '危險區'}.get(zscore_result.get('zone'), 'N/A')}
+- **判定**：{zscore_map.get(zscore_result.get('zone'), 'N/A')}
 
 ### Piotroski F-Score：{fscore_result.get('fscore', 'N/A')}/9
-- **判定**：{{'strong': '財務強健', 'average': '普通', 'weak': '疲弱'}.get(fscore_result.get('strength'), 'N/A')}
+- **判定**：{fscore_map.get(fscore_result.get('strength'), 'N/A')}
 
 ---
 

@@ -43,6 +43,8 @@ class TWFetcher(MarketDataFetcher):
                 return f"{ticker}.TWO"
         except Exception:
             pass
+        if ticker.startswith("^"):
+            return ticker  # Index tickers (e.g. ^TWII) don't use .TW suffix
         return f"{ticker}.TW"
 
     def get_quote(self, ticker: str) -> StockQuote:

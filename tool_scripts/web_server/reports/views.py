@@ -9,7 +9,7 @@ from pathlib import Path
 
 from django.shortcuts import render
 from django.conf import settings
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from .report_scanner import scan_reports
 from .system_scanner import scan_commands, scan_skills, scan_schedules, get_system_status
@@ -133,6 +133,48 @@ def report_detail(request, slug):
         'content': content,
         'inline_css': inline_css,
     })
+
+
+def report_pdf(request, slug):
+    """Generate and return PDF for a report using Playwright (file:// URL, no Django chrome)."""
+    reports = scan_reports(settings.REPORTS_OUTPUT_DIR)
+    report = next((r for r in reports if r['url_slug'] == slug), None)
+
+    if not report:
+        raise Http404("報告不存在")
+
+    html_path = report.get('html_path')
+    if not html_path:
+        raise Http404("報告 HTML 不存在")
+
+    file_url = html_path.as_uri()
+    filename = f"{slug}.pdf"
+
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(file_url, wait_until='networkidle', timeout=30000)
+        page.wait_for_timeout(1000)
+        # Hide iframes and show PDF placeholders
+        page.evaluate("""
+            document.querySelectorAll('iframe').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('[id$="Placeholder"], .chart-pdf-placeholder').forEach(el => {
+                el.style.display = 'block';
+            });
+        """)
+        pdf_bytes = page.pdf(
+            format='A4',
+            print_background=True,
+            margin={'top': '10mm', 'bottom': '10mm', 'left': '8mm', 'right': '8mm'},
+        )
+        browser.close()
+
+    return HttpResponse(
+        pdf_bytes,
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'attachment; filename="{filename}"'},
+    )
 
 
 def _fetch_price_history(ticker, market, days):
